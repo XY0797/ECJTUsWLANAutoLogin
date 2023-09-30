@@ -2,7 +2,11 @@ package com.eq.ecjtuswlanautologin;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -88,6 +92,40 @@ public class MainActivity extends AppCompatActivity {
         Button loginButton = (Button) view;
         // 禁用按钮
         loginButton.setEnabled(false);
+        if(!isWifiConnected(this)){
+            //不是wifi连接，不可能接入校园网
+            //提示用户
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("检测到您没有连接wifi\n如果您的手机显示已经连接了wifi，您可能需要在登录前关闭移动数据(流量)的开关");
+            builder.setPositiveButton("好的", null);
+            builder.show();
+            //解锁按钮
+            loginButton.setEnabled(true);
+            return;
+        }
+        if(etAccount.getText().toString().equals("")){
+            //提示用户
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("您没有填写学号！");
+            builder.setPositiveButton("好的", null);
+            builder.show();
+            //解锁按钮
+            loginButton.setEnabled(true);
+            return;
+        }
+        if(etPassword.getText().toString().equals("")){
+            //提示用户
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("您没有填写密码！");
+            builder.setPositiveButton("好的", null);
+            builder.show();
+            //解锁按钮
+            loginButton.setEnabled(true);
+            return;
+        }
         //创建API对象
         autoLoginECJTUAPI ECJTUAPI=new autoLoginECJTUAPI();
         //获取运营商选择状态
@@ -101,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 //返回值：1：没有联网 2：连接的不是校园网 3：连接了校园网但是没有登录 4：连接了校园网并且已经登录
                 if(state==1){
                     //没有联网
-                    rstTxt="您似乎没有开启wifi开关";
+                    rstTxt="您似乎没有网络连接";
                 }else if(state==3){
                     //连接了校园网但是没有登录
                     rstTxt=ECJTUAPI.login(etAccount.getText().toString(),etPassword.getText().toString(),ISPValue);
@@ -110,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     rstTxt="您已经处于登录状态";
                 }else{
                     //连接的不是校园网
-                    rstTxt="您似乎连接的不是校园网";
+                    rstTxt="您连接的wifi似乎不是校园网";
                 }
                 // 在网络请求完成后，使用Handler将结果返回到主线程
                 Handler handler = new Handler(Looper.getMainLooper());
@@ -138,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                             builder.setMessage(rstTxt);
                             builder.setPositiveButton("好的", null);
                             builder.show();
+                            saveUserInformation(false);
                         }
                         //解锁按钮
                         loginButton.setEnabled(true);
@@ -154,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
         saveUserInformation();
     }
     public void saveUserInformation(){
+        //实现默认参数
+        saveUserInformation(true);
+    }
+    public void saveUserInformation(boolean showUI){
         //获取到编辑框中的内容
         String accountValue = etAccount.getText().toString();
         String passwordValue = etPassword.getText().toString();
@@ -166,5 +209,12 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
         Toast.makeText(MainActivity.this, "保存完成",Toast.LENGTH_SHORT).show();
     }
-
+    public void but_debug(View view){
+        //调试测试功能使用
+    }
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+    }
 }
