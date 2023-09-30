@@ -3,9 +3,6 @@ package com.eq.ecjtuswlanautologin;
 import static android.content.ContentValues.TAG;
 
 import android.util.Log;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -23,10 +20,10 @@ import okhttp3.Response;
 public class autoLoginECJTUAPI {
     public String login(String studentID,String passwordECJTU,int theISP){
         if(studentID.equals("")){
-            return "E3 您没有填写studentID！";
+            return "E3 您没有填写学号！";
         }
         if(passwordECJTU.equals("")){
-            return "E3 您没有填写passwordECJTU！";
+            return "E3 您没有填写密码！";
         }
         //运营商取值   1：电信 2：移动 3：联通
         String str_theISP;
@@ -68,7 +65,7 @@ public class autoLoginECJTUAPI {
                         case "userid error1":
                             return "E3 账号不存在(或未绑定宽带账号或运营商选择有误)";
                         case "userid error2":
-                            return "E3 passwordECJTU错误";
+                            return "E3 密码错误";
                         case "512":
                             return "E3 AC认证失败(重复登录之类的)";
                         case "Rad:Oppp error: Limit Users Err":
@@ -128,18 +125,5 @@ public class autoLoginECJTUAPI {
         }
         return 2;
     }
-}
 
-public class NetworkUtils {
-    public static boolean isWifiConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
-    }
-
-    public static boolean isMobileDataConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
-    }
 }
