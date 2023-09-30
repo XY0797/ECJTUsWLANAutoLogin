@@ -3,6 +3,9 @@ package com.eq.ecjtuswlanautologin;
 import static android.content.ContentValues.TAG;
 
 import android.util.Log;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -124,5 +127,19 @@ public class autoLoginECJTUAPI {
             Log.d(TAG, "奇怪的异常捕获："+e);
         }
         return 2;
+    }
+}
+
+public class NetworkUtils {
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    public static boolean isMobileDataConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
     }
 }
