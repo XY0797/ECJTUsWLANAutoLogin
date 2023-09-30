@@ -27,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
     EditText etPassword;
     RadioGroup rgISP;
 
+    //用于判断是否需要覆写配置信息
+    String accountValue_p,passwordValue_p;
+    int ISPValue_p;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +49,20 @@ public class MainActivity extends AppCompatActivity {
         boolean isOKrun=true;
 
         //读取保存的账号
-        String accountValue = sharedPreferences.getString(accountKEY, "");
-        if(accountValue.equals("")){isOKrun=false;}
-        etAccount.setText(accountValue);
+        accountValue_p = sharedPreferences.getString(accountKEY, "");
+        if(accountValue_p.equals("")){isOKrun=false;}
+        etAccount.setText(accountValue_p);
 
         //读取保存的密码
-        String passwordValue = sharedPreferences.getString(passwordKEY, "");
-        if(passwordValue.equals("")){isOKrun=false;}
-        etPassword.setText(passwordValue);
+        passwordValue_p = sharedPreferences.getString(passwordKEY, "");
+        if(passwordValue_p.equals("")){isOKrun=false;}
+        etPassword.setText(passwordValue_p);
 
         //读取保存的运营商
-        int ISPValue = sharedPreferences.getInt(ISPKEY, 3);
-        if (ISPValue == 1) {
+        ISPValue_p = sharedPreferences.getInt(ISPKEY, 3);
+        if (ISPValue_p == 1) {
             rgISP.check(findViewById(R.id.radio_telecom).getId());
-        } else if (ISPValue == 2) {
+        } else if (ISPValue_p == 2) {
             rgISP.check(findViewById(R.id.radio_cmcc).getId());
         } else {
             rgISP.check(findViewById(R.id.radio_unicom).getId());
@@ -86,6 +90,56 @@ public class MainActivity extends AppCompatActivity {
             ISPValue=3;
         }
         return ISPValue;
+    }
+    public void buttonSave(View view) {
+        saveUserInformation();
+    }
+    public void saveUserInformation(){
+        //实现默认参数
+        saveUserInformation(true);
+    }
+    public void saveUserInformation(boolean showUI){
+        //获取UI中的内容
+        String accountValue = etAccount.getText().toString();
+        String passwordValue = etPassword.getText().toString();
+        int ISPValue=getISPselect();
+
+        //用于检测是否有更改
+        boolean isChange=false;
+        //将编辑框中的内容写入到轻量级存储器中
+        if(accountValue_p!=accountValue){
+            accountValue_p=accountValue;
+            editor.putString(accountKEY, accountValue);
+            isChange=true;
+        }
+        if(passwordValue_p!=passwordValue){
+            passwordValue_p=passwordValue;
+            editor.putString(passwordKEY, passwordValue);
+            isChange=true;
+        }
+        //保存运营商信息
+        if(ISPValue_p!=ISPValue){
+            ISPValue_p=ISPValue;
+            editor.putInt(ISPKEY, ISPValue);
+            isChange=true;
+        }
+        if (isChange){
+            //有更改才需要提交
+            editor.commit();
+        }
+        if(showUI){
+            //UI提示保存完成
+            Toast.makeText(MainActivity.this, "保存完成",Toast.LENGTH_SHORT).show();
+        }
+        //本方法结束
+    }
+    public void but_debug(View view){
+        //保留给调试测试功能使用
+    }
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
     public void doLogin(View view){
         // 获取登录按钮
@@ -187,34 +241,5 @@ public class MainActivity extends AppCompatActivity {
         });
         // 启动线程
         thread.start();
-    }
-
-    public void buttonSave(View view) {
-        saveUserInformation();
-    }
-    public void saveUserInformation(){
-        //实现默认参数
-        saveUserInformation(true);
-    }
-    public void saveUserInformation(boolean showUI){
-        //获取到编辑框中的内容
-        String accountValue = etAccount.getText().toString();
-        String passwordValue = etPassword.getText().toString();
-        //将编辑框中的内容写入到轻量级存储器中
-        editor.putString(accountKEY, accountValue);
-        editor.putString(passwordKEY, passwordValue);
-        //保存运营商信息
-        editor.putInt(ISPKEY, getISPselect());
-        //提交
-        editor.commit();
-        Toast.makeText(MainActivity.this, "保存完成",Toast.LENGTH_SHORT).show();
-    }
-    public void but_debug(View view){
-        //调试测试功能使用
-    }
-    public static boolean isWifiConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 }
