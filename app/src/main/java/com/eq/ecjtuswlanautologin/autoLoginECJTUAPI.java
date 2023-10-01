@@ -89,7 +89,8 @@ public class autoLoginECJTUAPI {
         //返回值：1：没有联网 2：连接的不是校园网 3：连接了校园网但是没有登录 4：连接了校园网并且已经登录
         Log.d(TAG, "开始创建OkHttpClient对象");
         OkHttpClient client = new OkHttpClient.Builder()
-                .readTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(2, TimeUnit.SECONDS)
+                .readTimeout(4, TimeUnit.SECONDS)
                 .build();
         Log.d(TAG, "开始准备请求头");
         Request request = new Request.Builder()
