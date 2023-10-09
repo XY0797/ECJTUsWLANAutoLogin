@@ -32,6 +32,13 @@ public class MainActivity extends AppCompatActivity {
     int ISPValue_p;
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        //说明退出了程序界面，直接finish，这样子下一次切换进入才会自动登录
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -46,16 +53,12 @@ public class MainActivity extends AppCompatActivity {
         etPassword=findViewById(R.id.editText_密码);
         rgISP=findViewById(R.id.radio_group);
 
-        boolean isOKrun=true;
-
         //读取保存的账号
         accountValue_p = sharedPreferences.getString(accountKEY, "");
-        if(accountValue_p.equals("")){isOKrun=false;}
         etAccount.setText(accountValue_p);
 
         //读取保存的密码
         passwordValue_p = sharedPreferences.getString(passwordKEY, "");
-        if(passwordValue_p.equals("")){isOKrun=false;}
         etPassword.setText(passwordValue_p);
 
         //读取保存的运营商
@@ -74,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
                 saveUserInformation();
             }
         });
+        //自动点击登录按钮
+        boolean isOKrun=true;
+        if(accountValue_p.equals("")){isOKrun=false;}
+        if(passwordValue_p.equals("")){isOKrun=false;}
         if(isOKrun){
             Button loginButton = findViewById(R.id.button_登录);
             loginButton.performClick();
