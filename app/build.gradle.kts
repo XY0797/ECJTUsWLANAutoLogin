@@ -11,8 +11,8 @@ android {
         applicationId = "com.eq.ecjtuswlanautologin"
         minSdk = 24
         targetSdk = 33
-        versionCode = 3
-        versionName = "2.0"
+        versionCode = 4
+        versionName = "2.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
